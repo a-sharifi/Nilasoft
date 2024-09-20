@@ -1,0 +1,11 @@
+alembic
+SQLAlchemy
+fastapi
+uvicorn
+psycopg2-binary
+pydantic
+PyJWT
+httpx
+loguru
+pydantic-settings
+passlib
