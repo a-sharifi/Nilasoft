@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 from typing import List
 
@@ -15,9 +17,9 @@ class UserSerializer(BaseModel):
 
 
 class AuthPayload(BaseModel):
-    sub: str
-    iat: int
-    exp: int
+    sub: int
+    iat: datetime
+    exp: datetime
     permissions: List[str]
     scope: str | None = None
 

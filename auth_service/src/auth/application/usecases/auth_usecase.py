@@ -7,7 +7,7 @@ from src.auth.presentation.dto.auth_dto import UserCreateDTO
 from passlib.context import CryptContext
 
 from src.auth.presentation.serializers.auth_serializer import AuthPayload, TokenResponseSerializer
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import jwt
 
 
@@ -29,7 +29,7 @@ class AuthUseCase:
         user.password = self.pwd_context.hash(user.password)
         try:
             user = await self.auth_service.create_user(user)
-            return await self.create_access_token(user.email)
+            return await self.create_access_token(user.id)
         except IntegrityError:
             return HTTPException(
                 status_code=400, detail="User already exists"
@@ -46,15 +46,14 @@ class AuthUseCase:
             return False
         return user
 
-    async def create_access_token(self, email: str) -> TokenResponseSerializer:
-        auth = AuthPayload(sub=email,
+    async def create_access_token(self, id: int) -> TokenResponseSerializer:
+        auth = AuthPayload(sub=id,
                            permissions=["me", "security:read",
                                         "security:write",
                                         "security:delete",
                                         "security:read:all"],
-                           exp=int((datetime.utcnow() +
-                                    timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp()),
-                           iat=int(datetime.utcnow().timestamp())
+                           exp=datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+                           iat=datetime.now(timezone.utc)
                            )
         # encode
         token = jwt.encode(auth.dict(), settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -68,4 +67,4 @@ class AuthUseCase:
             return HTTPException(
                 status_code=404, detail="User not found"
             )
-        return await self.create_access_token(email=email)
+        return await self.create_access_token(id=user.id)
