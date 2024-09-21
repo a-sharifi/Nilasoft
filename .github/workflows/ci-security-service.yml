@@ -1,0 +1,88 @@
+name: CI for Security Service
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image for Security Service
+        working-directory: ./security_service
+        run: docker build -t nila_secure:v1 .
+
+      - name: Create .env file from GitHub Secrets
+        working-directory: ./security_service
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
+          echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "TEST_DATABASE_URL=${{ secrets.TEST_DATABASE_URL }}" >> .env
+          echo "LOGIN_URL=${{ secrets.LOGIN_URL }}" >> .env
+          echo "CREATE_USER_URL=${{ secrets.CREATE_USER_URL }}" >> .env
+
+      - name: Run tests with pytest inside Docker container
+        working-directory: ./security_service
+        run: docker run --env-file .env nila_secure:v1 pytest src/security/tests/*
+
+      - name: Clean up .env file
+        working-directory: ./security_service
+        run: rm -f .env
+
+      # Log in to Docker Hub
+#      - name: Log in to Docker Hub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#
+#      # Push Docker image to Docker Hub
+#      - name: Push image to Docker Hub
+#        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nila_secure:${{ github.sha }}
+#
+#      # Set up kubectl
+#      - name: Set up kubectl
+#        uses: azure/setup-kubectl@v3
+#        with:
+#          version: 'v1.24.0'  # Specify the kubectl version
+#
+#      # Configure kubectl with KUBECONFIG
+#      - name: Configure kubectl
+#        run: |
+#          mkdir -p $HOME/.kube
+#          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+#
+#      # Apply Kubernetes Secrets
+#      - name: Apply Kubernetes Secrets
+#        run: |
+#          kubectl create secret generic security-service-secrets \
+#            --from-literal=SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+#            --from-literal=ALGORITHM="${{ secrets.ALGORITHM }}" \
+#            --from-literal=ACCESS_TOKEN_EXPIRE_MINUTES="${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" \
+#            --from-literal=DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+#            --from-literal=LOGIN_URL="${{ secrets.LOGIN_URL }}" \
+#            --from-literal=CREATE_USER_URL="${{ secrets.CREATE_USER_URL }}" \
+#            --dry-run=client -o yaml | kubectl apply -f -
+#
+#      # Deploy to Kubernetes cluster
+#      - name: Deploy to Kubernetes
+#        working-directory: ./security_service
+#        run: |
+#          kubectl apply -f deployment.yaml
+#          kubectl apply -f service.yaml
+#
+#      # Update image in Kubernetes Deployment
+#      - name: Update Kubernetes Deployment Image
+#        run: |
+#          kubectl set image deployment/security-service-deployment security-service-container=${{ secrets.DOCKERHUB_USERNAME }}/nila_secure:${{ github.sha }}

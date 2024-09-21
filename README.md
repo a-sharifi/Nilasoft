@@ -4,30 +4,72 @@
 To get started with each project:
 
 1. **Clone the Project:**
-   - Clone via SSH:
-     ```bash
-     git clone git@gitlab.sishemi.com:Binj/pds/backend/pds-monorepo-backend-service.git
-     ```
+
    - Clone via HTTPS:
      ```bash
-     
+      git clone https://github.com/a-sharifi/Nilasoft.git
      ```
-
-
-2. **Navigate to the Respective Folder:**
-   - Once cloned, navigate to the folder (`ai`, `core`, or `common`) of the project you want to work on.
-
-3. **Running FastAPI in the `core` Folder:**
-   - Change directory to the `core` folder:
+## Run security project
+   - Change directory to the `security_service` folder:
      ```bash
-     cd core
+     cd security_service
      ```
-   - Install required dependencies:
-     ```bash
-     pip install -r requirements.txt
-     ```
+   - Fill the `.env` file with your own values.
+    - Install required dependencies:
+      ```bash
+      pip install -r requirements.txt
+      ```
    - Run FastAPI using uvicorn:
      ```bash
-     uvicorn main:app --reload
+     uvicorn src.main:app --reload
      ```
-4. 
+   - Run FastAPI using docker:
+     ```bash
+     docker run --env-file .env nila_secure:v1 uvicorn src.main:app --port 8000
+      ```
+
+### With Docker
+    docker build -t nila_secure:v1 .
+
+## Run auth_service project
+   - Change directory to the `auth_service` folder:
+     ```bash
+     cd auth_service
+     ```
+   - Fill the `.env` file with your own values.
+    - Install required dependencies:
+      ```bash
+      pip install -r requirements.txt
+      ```
+   - Run FastAPI using uvicorn:
+     ```bash
+     uvicorn src.main:app --reload
+     ```
+
+
+## Swagger
+- Swagger UI is available at `/docs` and the OpenAPI schema is available at `/openapi.json`.
+
+
+## Run tests
+   - Change directory to the `security_service` folder:
+     ```bash
+     cd security_service
+     ```
+   - Run tests:
+     ```bash
+     pytest src/security/tests/*
+     ```
+   - Run tests with docker
+     ```bash
+      docker run --env-file .env nila_secure:v1 pytest src/security/tests/*
+     ```
+
+   - Change directory to the `auth_service` folder:
+     ```bash
+     cd auth_service
+     ```
+   - Run tests:
+     ```bash
+     pytest
+     ```

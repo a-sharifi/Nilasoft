@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel
@@ -5,8 +6,8 @@ from pydantic import BaseModel
 
 class AuthPayload(BaseModel):
     sub: int
-    iat: int
-    exp: int
+    iat: datetime
+    exp: datetime
     permissions: List[str]
     scope: str | None = None
 

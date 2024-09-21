@@ -8,3 +8,6 @@ PyJWT
 httpx
 loguru
 pydantic-settings
+pytest
+requests
+aiosqlite

@@ -8,8 +8,9 @@ class Settings(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     DATABASE_URL: str
-
-    model_config = SettingsConfigDict(env_file="/home/amir/projects/amir/Nilasoft/auth_service/.env")
+    TEST_DATABASE_URL: Optional[str] = None
+    LOGIN_URL: str
+    CREATE_USER_URL: str
 
 
 settings = Settings()
