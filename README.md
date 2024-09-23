@@ -25,13 +25,13 @@ To get started with each project:
     ```
 - Build docker image:
  ```bash
-docker build -t nila_secure:v1 .
+docker build -t nila_secure:v1
 ```
 
 
    - Run FastAPI using docker:
      ```bash
-     docker build -t nila_secure:v1 .
+        docker run --env-file .env -p 8000:8000 nila_secure:v1 uvicorn src.main:app --host 0.0.0.0 --port 8000
      ```
 
 ### With Docker
