@@ -20,13 +20,19 @@ To get started with each project:
       pip install -r requirements.txt
       ```
    - Run FastAPI using uvicorn:
-     ```bash
-     uvicorn src.main:app --reload
-     ```
+    ```bash
+         uvicorn src.main:app --reload
+    ```
+- Build docker image:
+ ```bash
+docker build -t nila_secure:v1 .
+```
+
+
    - Run FastAPI using docker:
      ```bash
-     docker run --env-file .env nila_secure:v1 uvicorn src.main:app --port 8000
-      ```
+     docker build -t nila_secure:v1 .
+     ```
 
 ### With Docker
     docker build -t nila_secure:v1 .
